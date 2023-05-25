@@ -1,0 +1,14 @@
+# Ignore __pycache__ folder
+__pycache__/
+
+# Ignore .venv folder
+.venv/
+
+# Ignore .vscode folder
+.vscode/
+
+# Ignore the content of the uploads folder
+/uploads/*
+
+# Ignore weights folder
+weights/
