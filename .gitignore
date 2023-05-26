@@ -8,7 +8,7 @@ __pycache__/
 .vscode/
 
 # Ignore the content of the uploads folder
-/uploads/*
+uploads/*
 
 # Ignore weights folder
 weights/
