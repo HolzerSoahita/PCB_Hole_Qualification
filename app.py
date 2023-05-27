@@ -4,6 +4,8 @@ from werkzeug.utils import secure_filename
 import os
 from flask import Flask, render_template, request, abort
 import pickle  # will help to dump and load ML model
+from modules.InferenceModel import InferenceModel
+import pandas as pd
 
 ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'JPG', 'JPEG']
 UPLOAD_FOLDER = 'uploads/'
@@ -11,8 +13,6 @@ UPLOAD_FOLDER = 'uploads/'
 app = Flask(__name__, template_folder='Template')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-
-# model = pickle.load(open('model.pkl', 'rb'))
 
 filenames_list = set()
 
@@ -30,11 +30,26 @@ def predict():
     # Upload files
     filenames_list = upload(request.files)
 
-    print(list(filenames_list))
+    # print(list(filenames_list))
 
-    return render_template('results.html')
+    model = InferenceModel('weights/best.pt', 'weights/sam_vit_h_4b8939.pth')
 
-    # return list(filenames_list)
+    final_result = pd.DataFrame()
+
+    for name in filenames_list:
+        result = model.infer(os.path.join(
+            app.config['UPLOAD_FOLDER'], name))
+
+        result.insert(0, 'file', '')
+        result.at[0, 'file'] = name
+
+        final_result = pd.concat([final_result, result], ignore_index=True)
+
+    print(final_result)
+
+    return final_result.to_html()
+
+    # return render_template('results.html')
 
 
 def upload(my_files):
